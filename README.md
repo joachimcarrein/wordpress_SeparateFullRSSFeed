@@ -10,7 +10,11 @@ About
 
 Installation
 ------------
-	- Zip the files
-	- Upload to your wordpress plugins
-	- Activate the plugin
+	Zip the files
+	Upload to your wordpress plugins
+	Activate the plugin
 
+todo
+----
+- remove feed type on uninstall
+- custom feed slug?
