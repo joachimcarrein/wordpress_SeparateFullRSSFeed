@@ -20,4 +20,4 @@ Installation
 
 Todo
 ----
-- Gives back a blank blog, runs on my testblog. Need to test why
+- ...

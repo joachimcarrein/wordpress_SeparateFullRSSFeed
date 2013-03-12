@@ -65,10 +65,10 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 		{
 			delete_option($this->option_name);
 			
-			flush_the_rules();
+			$this->flush_the_rules();
 		} // end deactivate
 		
-		function flush_the_rules()
+		public function flush_the_rules()
 		{
 			flush_rewrite_rules();
 			//Ensure the $wp_rewrite global is loaded
@@ -82,7 +82,7 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 			$options = get_option($this->option_name);
 			add_feed($options['FeedSlug'], array( &$this, 'full_rss'));
 			add_action('generate_rewrite_rules', array(&$this, 'plugin_rewrite_rules'));
-			flush_the_rules();
+			$this->flush_the_rules();
 		} // end init_custom_feed
 		
 		function plugin_rewrite_rules( $wp_rewrite )
