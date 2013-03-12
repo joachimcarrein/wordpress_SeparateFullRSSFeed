@@ -5,8 +5,9 @@
  * @package WordPress
  */
 
+$options = get_option('separatefullrssfeed-options');
 $more = 1;
-$numposts = 100;
+$numposts = $options['NumOfPosts'];
 $posts = query_posts('showposts='.$numposts);
 
 header('Content-Type: ' . feed_content_type('rss-http') . '; charset=' . get_option('blog_charset'), true);

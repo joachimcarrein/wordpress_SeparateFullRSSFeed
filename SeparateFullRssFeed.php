@@ -26,10 +26,24 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+/*
+Sources
+- http://wordpress.org/support/topic/creating-a-custom-rss-feed
+- http://plugins.svn.wordpress.org/feed-wrangler/tags/0.3.2/feed-wrangler.php
+- http://xplus3.net/2008/10/30/custom-feeds-in-wordpress/
+
+*/
+
 if(!class_exists('Separate_Full_RSS_Feed'))
 {
 	class Separate_Full_RSS_Feed
 	{
+		public $option_name = 'separatefullrssfeed-options';
+		public $option_data = array(
+			'NumOfPosts' => '100',
+			'FeedSlug' => 'fullrss'
+		);
+		
 		function __construct()
 		{
 			// register actions
@@ -56,9 +70,6 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 			global $wp_rewrite;
 			//Call flush_rules() as a method of the $wp_rewrite object
 			$wp_rewrite->flush_rules();
-			//http://wordpress.org/support/topic/creating-a-custom-rss-feed
-			//http://plugins.svn.wordpress.org/feed-wrangler/tags/0.3.2/feed-wrangler.php
-			//http://xplus3.net/2008/10/30/custom-feeds-in-wordpress/
 		} // end init_custom_feed
 		
 		function plugin_rewrite_rules( $wp_rewrite )
@@ -80,8 +91,60 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 		
 		function init_settings()
 		{
-			//register_setting('separate_full_rss_feed-group', 'rss_slug'); 			
+			register_setting('separate_full_rss_feed-group', $this->option_name, array(&$this, 'validate_settings')); 			
 		} // end init_settings
+		
+		function validate_settings($input)
+		{
+		    $valid = array();
+			$old_options = get_option($this->option_name);
+			
+			$valid['NumOfPosts'] = sanitize_text_field($input['NumOfPosts']);
+			
+			if (!is_numeric($valid['NumOfPosts']))
+			{
+				add_settings_error(
+						'NumOfPosts',                   						// Setting title
+						'NumOfPosts_error',            							// Error ID
+						'"' . $valid['NumOfPosts'] . '" is not an integer',     // Error message
+						'error'                        							// Type of message
+				);
+
+				// Set it to the default value
+				$valid['NumOfPosts'] = $this->option_data['NumOfPosts'];
+			} else
+			{
+				if ($valid['NumOfPosts'] < 0)
+				{
+					add_settings_error(
+							'NumOfPosts',                   						// Setting title
+							'NumOfPosts_error',            							// Error ID
+							'Number of posts must be at least zero', 				// Error message
+							'error'                        							// Type of message
+					);
+
+					// Set it to the default value
+					$valid['NumOfPosts'] = $this->option_data['NumOfPosts'];				
+				}
+			}
+			
+			$valid['FeedSlug'] = strtolower(sanitize_text_field($input['FeedSlug']));
+			
+			if ($valid['FeedSlug'] == '')
+			{
+				add_settings_error(
+						'FeedSlug',                   							// Setting title
+						'FeedSlug_error',            							// Error ID
+						'Feed slug cannot be blank',						    // Error message
+						'error'                        							// Type of message
+				);
+
+				// Set it to the default value
+				$valid['FeedSlug'] = $this->option_data['FeedSlug'];
+			}
+
+			return $valid;
+		} // end validate_settings
 		
 		function plugin_menu()
 		{
@@ -95,9 +158,11 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 			}
 			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
 		} // end plugin_settings_page
-		
+
 		function plugin_uninstall()
 		{
+			delete_option('SeparateFullRssFeed_NumOfPosts');
+			
 			//add_feed('fullrss','do_feed_rss2');
 			flush_rewrite_rules();
 			//Ensure the $wp_rewrite global is loaded
