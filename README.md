@@ -17,7 +17,7 @@ Installation
 	Upload to your wordpress plugins
 	Activate the plugin
 
-todo
+Todo
 ----
 - remove feed type on uninstall
 - custom feed slug?
