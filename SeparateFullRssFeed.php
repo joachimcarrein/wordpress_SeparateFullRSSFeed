@@ -51,6 +51,7 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 		function init_custom_feed()
 		{
 			add_feed('fullrss', array( &$this, 'full_rss'));
+			add_action('generate_rewrite_rules', array(&$this, 'plugin_rewrite_rules'));
 			//Ensure the $wp_rewrite global is loaded
 			global $wp_rewrite;
 			//Call flush_rules() as a method of the $wp_rewrite object
@@ -59,6 +60,14 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 			//http://plugins.svn.wordpress.org/feed-wrangler/tags/0.3.2/feed-wrangler.php
 			//http://xplus3.net/2008/10/30/custom-feeds-in-wordpress/
 		} // end init_custom_feed
+		
+		function plugin_rewrite_rules( $wp_rewrite )
+		{
+			$new_rules = array(
+				'feed/(.+)' => 'index.php?feed='.$wp_rewrite->preg_index(1)
+			);
+			$wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
+		} // end plugin_rewrite_rules
 		
 		function full_rss() {
 			load_template(sprintf("%s/templates/feed-fullrss.php", dirname(__FILE__)));
@@ -89,7 +98,8 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 		
 		function plugin_uninstall()
 		{
-			add_feed('fullrss','do_feed_rss2');
+			//add_feed('fullrss','do_feed_rss2');
+			flush_rewrite_rules();
 			//Ensure the $wp_rewrite global is loaded
 			global $wp_rewrite;
 			//Call flush_rules() as a method of the $wp_rewrite object
