@@ -10,7 +10,7 @@ Features
 - It always exports the last 100 posts by default (Change in settings)
 - It always exports the full text
 - It strips out the *<!--more-->* tag
-- Feed available through ?feed=<slug> or /feed/<slug>
+- Feed available through ?feed=slug or /feed/slug
 
 Installation
 ------------
@@ -20,4 +20,4 @@ Installation
 
 Todo
 ----
-- ...
+- Gives back a blank blog, runs on my testblog. Need to test why
