@@ -31,13 +31,12 @@ Sources
 - http://wordpress.org/support/topic/creating-a-custom-rss-feed
 - http://plugins.svn.wordpress.org/feed-wrangler/tags/0.3.2/feed-wrangler.php
 - http://xplus3.net/2008/10/30/custom-feeds-in-wordpress/
-
 */
-
+	
 if(!class_exists('Separate_Full_RSS_Feed'))
 {
 	class Separate_Full_RSS_Feed
-	{
+	{		
 		public $option_name = 'separatefullrssfeed-options';
 		public $option_data = array(
 			'NumOfPosts' => '100',
@@ -45,37 +44,45 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 		);
 		
 		function __construct()
-		{
+		{		
+			// Installation and uninstallation hooks 
+			register_activation_hook(__FILE__, array($this, 'activate')); 
+			register_deactivation_hook(__FILE__, array($this, 'deactivate')); 			
+			
 			// register actions
 			add_action('admin_init', array( &$this, 'plugin_init')); 
 			add_action('admin_menu', array( &$this, 'plugin_menu'));
-			add_filter('init', array(&$this, 'init_custom_feed'));
+			add_filter('init', array(&$this, 'init_custom_feed'));		
 			
 		} // end construct
 		
-		static function activate()
-		{
-			update_option($this->option_name, $this->option_data);
+		public function activate()
+		{			
+			update_option($this->option_name, $this->option_data);		
 		} // end activate
 
-		static function deactivate()
+		public function deactivate()
 		{
 			delete_option($this->option_name);
-					
+			
+			flush_the_rules();
+		} // end deactivate
+		
+		function flush_the_rules()
+		{
 			flush_rewrite_rules();
 			//Ensure the $wp_rewrite global is loaded
 			global $wp_rewrite;
 			//Call flush_rules() as a method of the $wp_rewrite object
 			$wp_rewrite->flush_rules();
-		} // end deactivate
+		} // end flush_the_rules
+
 		function init_custom_feed()
 		{
-			add_feed('fullrss', array( &$this, 'full_rss'));
+			$options = get_option($this->option_name);
+			add_feed($options['FeedSlug'], array( &$this, 'full_rss'));
 			add_action('generate_rewrite_rules', array(&$this, 'plugin_rewrite_rules'));
-			//Ensure the $wp_rewrite global is loaded
-			global $wp_rewrite;
-			//Call flush_rules() as a method of the $wp_rewrite object
-			$wp_rewrite->flush_rules();
+			flush_the_rules();
 		} // end init_custom_feed
 		
 		function plugin_rewrite_rules( $wp_rewrite )
@@ -148,6 +155,10 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 				// Set it to the default value
 				$valid['FeedSlug'] = $this->option_data['FeedSlug'];
 			}
+			else
+			{
+				init_custom_feed();
+			}
 
 			return $valid;
 		} // end validate_settings
@@ -170,10 +181,6 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 
 if(class_exists('Separate_Full_RSS_Feed')) 
 { 
-	// Installation and uninstallation hooks 
-	register_activation_hook(__FILE__, array('Separate_Full_RSS_Feed', 'activate')); 
-	register_deactivation_hook(__FILE__, array('Separate_Full_RSS_Feed', 'deactivate')); 
-	
 	// instantiate the plugin class 
 	$Separate_Full_RSS_Feed = new Separate_Full_RSS_Feed(); 
 	
