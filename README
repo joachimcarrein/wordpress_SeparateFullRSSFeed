@@ -1,0 +1,20 @@
+SeparateFullRSSFeed
+===================
+
+About
+-----
+`SeparateFullRSSFeed` is a plugin I created to create a new feed type "FULLRSS".
+It always exports the full text of the last 100 posts.
+
+I need this for [my own blog] (http://nav-magno.be).
+
+Installation
+------------
+	- Zip the files
+	- Upload to your wordpress plugins
+	- Activate the plugin
+
+Usage
+-----
+Activate the plugin and everything is *functional*.
+
