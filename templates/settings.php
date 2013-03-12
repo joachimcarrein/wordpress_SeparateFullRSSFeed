@@ -19,7 +19,7 @@
 		</table>
 		
 		<?php @submit_button(); ?>
-		<p>Click <a href="/?feed=<?php echo $options['FeedSlug']; ?>" target="_blank">here.</a> to show the feed</p>
+		<p>Click <a href="/?feed=<?php echo $options['FeedSlug']; ?>" target="_blank">here</a> to show the feed</p>
 		
 	</form>
 </div>

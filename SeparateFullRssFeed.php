@@ -55,12 +55,18 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 		
 		static function activate()
 		{
-			register_uninstall_hook(__FILE__,'plugin_uninstall');
+			update_option($this->option_name, $this->option_data);
 		} // end activate
 
 		static function deactivate()
 		{
-			// do nothing
+			delete_option($this->option_name);
+					
+			flush_rewrite_rules();
+			//Ensure the $wp_rewrite global is loaded
+			global $wp_rewrite;
+			//Call flush_rules() as a method of the $wp_rewrite object
+			$wp_rewrite->flush_rules();
 		} // end deactivate
 		function init_custom_feed()
 		{
@@ -159,18 +165,6 @@ if(!class_exists('Separate_Full_RSS_Feed'))
 			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
 		} // end plugin_settings_page
 
-		function plugin_uninstall()
-		{
-			delete_option('SeparateFullRssFeed_NumOfPosts');
-			
-			//add_feed('fullrss','do_feed_rss2');
-			flush_rewrite_rules();
-			//Ensure the $wp_rewrite global is loaded
-			global $wp_rewrite;
-			//Call flush_rules() as a method of the $wp_rewrite object
-			$wp_rewrite->flush_rules();
-		} // end plugin_uninstall
-		
 	} // end class
 } // end if class_exists
 
